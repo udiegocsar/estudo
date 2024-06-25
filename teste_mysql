@@ -78,3 +78,7 @@ SELECT
 	FROM contato
 		INNER JOIN endereco
 			ON id_contato = id_morador;
+
+
+-- Apago a tabela 'teste' presente no banco de dados
+DROP TABLE teste;

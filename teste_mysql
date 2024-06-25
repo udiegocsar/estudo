@@ -1,0 +1,80 @@
+-- Crio e uso do DB
+CREATE DATABASE teste;
+USE teste;
+
+-- Crio a tabela de contatos
+CREATE TABLE contato(
+	id_contato integer PRIMARY KEY AUTO_INCREMENT,
+    nome varchar(30) NOT NULL,
+    email varchar(50) NOT NULL,
+    telefone integer NOT NULL
+    );
+
+-- Deixando email e telefone como unicos
+ALTER TABLE contato
+	ADD UNIQUE (email, telefone);
+    
+ALTER TABLE contato
+	ADD data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+
+SELECT * FROM contato;
+
+-- Crio a tabela de endereços
+CREATE TABLE endereco(
+	bairro varchar(50) not null,
+    rua varchar (50) not null,
+    numero int4 not null,
+    id_morador integer not null,
+    foreign key (id_morador) references contato(id_contato)
+    );
+
+-- Adiciono a coluna 'complemento' e deixo ela nula
+ALTER TABLE endereco 
+	ADD complemento varchar(255) DEFAULT NULL;
+
+
+SELECT * FROM endereco;
+
+-- Inserindo dados na tabela de contatos
+INSERT INTO contato (nome, email, telefone)
+	VALUES('Diego', 'diego@gmail.com', '964194616');
+    
+-- Aqui uso a função 'LAST_INSERT_ID()' para pegar o id gerado no auto increment para passar com o endereço
+SELECT LAST_INSERT_ID() INTO @id_contato;
+INSERT INTO endereco (bairro, numero, rua, id_morador)
+	VALUES('Santa Efigenia', '62', 'Rua da Conquista', @id_contato);
+
+INSERT INTO contato (nome, email, telefone)
+	VALUES('Mateus', 'mateus@gmail.com', '75742991');
+SELECT LAST_INSERT_ID() INTO @id_contato;
+INSERT INTO endereco (bairro, numero, rua, id_morador)
+	VALUES('Santa Efigenia', '62', 'Rua da Conquista', @id_contato);
+
+INSERT INTO contato (nome, email, telefone)
+	VALUES('Ana Beatriz', 'ana@gmail.com', '73737548');
+SELECT LAST_INSERT_ID() INTO @id_contato;
+INSERT INTO endereco (bairro, numero, rua, id_morador)
+	VALUES('Ipiranga', '60', 'Salin Cury', @id_contato);
+    
+INSERT INTO contato (nome, email, telefone)
+	VALUES('Miguel', 'miguel@gmail.com', '093786725');
+SELECT LAST_INSERT_ID() INTO @id_contato;
+INSERT INTO endereco (bairro, numero, rua, id_morador)
+	VALUES('Ipiranga', '100', 'Darcy Vargas', @id_contato);
+
+SELECT * FROM contato;
+SELECT * FROM endereco;
+
+SELECT 
+	contato.id_contato AS 'ID do contato',
+    contato.nome AS 'Nome do Contato',
+    contato.email AS 'E-mail do Contato',
+    contato.telefone AS 'Telefone do Contato',
+    contato.data_atualizacao AS 'Data de Atualização',
+    endereco.bairro AS 'Bairro',
+    endereco.rua AS 'Rua',
+    endereco.numero AS 'Número',
+    endereco.complemento AS 'Complemento'
+	FROM contato
+		INNER JOIN endereco
+			ON id_contato = id_morador;
